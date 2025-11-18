@@ -4,12 +4,16 @@ import json
 import time
 import watchdog.events
 import watchdog.observers
+import dotenv
 
+dotenv.load_dotenv()
 # size of chunks to read when hashing files
-block_size = 65536
+block_size = int(os.getenv("block_size"))
 
-CONFIG_PATH = "config.json"
-_IGNORE_FILENAME = os.path.basename(CONFIG_PATH)
+
+HASH_PATH = os.getenv("hash_path")
+_IGNORE_FILENAME = os.path.basename(HASH_PATH)
+CONFIG_PATH = ".env"
 
 
 def _file_hash(path):
@@ -52,7 +56,7 @@ def calc_of_hash(path):
 def read_index():
     index = {}
     try:
-        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+        with open(HASH_PATH, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -72,12 +76,12 @@ def read_index():
 
 
 def write_index(index):
-    tmp = CONFIG_PATH + ".tmp"
+    tmp = HASH_PATH + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
         for loc, h in sorted(index.items()):
             json.dump({"Location": loc, "Hash": h}, f, ensure_ascii=False)
             f.write("\n")
-    os.replace(tmp, CONFIG_PATH)
+    os.replace(tmp, HASH_PATH)
 
 
 def upsert_entry(location, hash_value):
@@ -126,7 +130,7 @@ class WatcherHandler(watchdog.events.FileSystemEventHandler):
 
 
 # ignore config.json and config.json.tmp (case-insensitive on Windows)
-_IGNORE_FILENAME = os.path.basename(CONFIG_PATH)
+_IGNORE_FILENAME = os.path.basename(HASH_PATH)
 _IGNORE_FILENAMES = { _IGNORE_FILENAME, _IGNORE_FILENAME + ".tmp" }
 _IGNORE_FILENAMES_NORM = { os.path.normcase(x) for x in _IGNORE_FILENAMES }
 
