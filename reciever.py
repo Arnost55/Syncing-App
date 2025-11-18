@@ -1,8 +1,12 @@
 import socket
 import json
 import os
+import dotenv
+import hashlib
 
-def start_server(config_file, port=5000):
+dotenv.load_dotenv()
+
+def start_server(config_file, port=int(os.getenv("port_receiver"))):
     # Load local config
     with open(config_file, 'r') as f:
         local_config = json.load(f)

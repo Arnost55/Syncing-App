@@ -1,14 +1,19 @@
 import socket
 import json
 import os
+import hashlib
+import dotenv
 
-def start_client(config_file, server_ip, port=5000):
+dotenv.load_dotenv()
+
+
+def start_client(config_file, server_ip, port=int(os.getenv("port_sender"))):
     # Load local config
     with open(config_file, 'r') as f:
         local_config = json.load(f)
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((server_ip, port))
+    s.connect((server_ip, int(os.getenv("port_receiver"))))
     print(f"Connected to {server_ip}:{port}")
     
     # Exchange configs
