@@ -5,6 +5,13 @@ import time
 import watchdog.events
 import watchdog.observers
 import dotenv
+import threading
+
+
+threading.stack_size(2 * 1024 * 1024)  # 2MB stack size for watcher threads
+
+
+
 
 dotenv.load_dotenv()
 # size of chunks to read when hashing files
@@ -14,6 +21,7 @@ block_size = int(os.getenv("block_size"))
 HASH_PATH = os.getenv("hash_path")
 _IGNORE_FILENAME = os.path.basename(HASH_PATH)
 CONFIG_PATH = ".env"
+
 
 
 def _file_hash(path):
@@ -151,7 +159,7 @@ watchdog.events.FileSystemEventHandler.dispatch = _dispatch_filtered
 
 
 if __name__ == "__main__":
-    path = "."  # Watch current directory
+    path = int(os.getenv("watch_paths"))
     event_handler = WatcherHandler()
     observer = watchdog.observers.Observer()
     observer.schedule(event_handler, path, recursive=True)
