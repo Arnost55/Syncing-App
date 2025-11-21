@@ -12,8 +12,6 @@ threading.stack_size(2 * 1024 * 1024)  # 2MB stack size for watcher threads
 
 
 
-
-
 dotenv.load_dotenv()
 # size of chunks to read when hashing files
 block_size = int(os.getenv("block_size"))
